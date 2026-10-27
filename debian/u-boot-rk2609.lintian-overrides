@@ -1,0 +1,3 @@
+# pwsh is for use under Windows to create SPI image
+# However it does work under Linux
+u-boot-rk2609: unusual-interpreter

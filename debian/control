@@ -32,12 +32,21 @@ Depends: ${misc:Depends},
 Description: U-Boot based on boot-rk2609
  This package provides the prebuilt U-Boot based on boot-rk2609.
 
-Package: u-boot-product
+Package: u-boot-radxa-rk3576
 Architecture: all
 Depends: u-boot-rk2609 (= ${binary:Version}),
          ${misc:Depends},
 Section: admin
 Priority: optional
-Description: Radxa U-Boot meta-package for new product
- This package provides the prebuilt U-Boot for new product.
+Description: Radxa U-Boot meta-package for Radxa RK3576 products
+ This package provides the prebuilt U-Boot for Radxa RK3576 products.
+
+Package: u-boot-radxa-rk3576-spi
+Architecture: all
+Depends: u-boot-rk2609 (= ${binary:Version}),
+         ${misc:Depends},
+Section: admin
+Priority: optional
+Description: Radxa U-Boot meta-package for Radxa RK3576 SPI products
+ This package provides the prebuilt U-Boot for Radxa RK3576 products.
 

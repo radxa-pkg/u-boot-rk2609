@@ -1,0 +1,66 @@
+PACKING_VARIANTS := "" "_SPINOR"
+
+#
+# Common supporting targets
+#
+
+# Pack U-Boot
+# $1: SoC
+# $2: Variant
+define pack_uboot
+	set -e; \
+	if [ -f "rkbin/RKBOOT/$(subst rk,RK,$(1))MINIALL_V5$(2).ini" ]; then \
+		sed -e "s|^FlashBoot=.*|FlashBoot=$(CURDIR)/src/spl/u-boot-spl.bin|" \
+		    -e "s|^PATH=.*|PATH=$(CURDIR)/out/$@/rkboot$(2).bin|" \
+		    -e "s|^IDB_PATH=.*|IDB_PATH=$(CURDIR)/out/$@/idblock$(2).img|" \
+		    "rkbin/RKBOOT/$(subst rk,RK,$(1))MINIALL_V5$(2).ini" > "out/.pack/$@$(2).ini"; \
+		(cd rkbin && tools/boot_merger "$(CURDIR)/out/.pack/$@$(2).ini"); \
+	fi;
+endef
+
+# Build and Pack U-Boot
+# $1: SoC
+define build_uboot
+	$(UMAKE) all
+	cd src && PATH="$(CURDIR)/src/scripts/dtc:$$PATH" ./make.sh itb CROSS_COMPILE=$(CROSS_COMPILE)
+endef
+
+# Install U-Boot binaries
+# $1: SoC
+define install_uboot
+	test -f "rkbin/RKBOOT/$(subst rk,RK,$(1))MINIALL_V5.ini"
+	mkdir -p out/$@ out/.pack
+	$(foreach variant,$(PACKING_VARIANTS),$(call pack_uboot,$(1),$(variant)))
+	install -m 0644 src/u-boot.itb "out/$@/"
+	install -m 0755 setup/u-boot_setup-rockchip.sh out/$@/setup.sh
+	install -m 0755 setup/u-boot_setup-rockchip.ps1 out/$@/setup.ps1
+endef
+
+# Define standard U-Boot targets
+# $1: product ID
+# $2: product SoC
+# $3: product defconfig
+define uboot_targets
+
+UBOOT_PRODUCTS += $(1)
+
+.PHONY: $(1)_defconfig
+$(1)_defconfig: clean_config
+	$$(UMAKE) $(3)
+
+.PHONY: $(1)_build
+$(1)_build: $(1)_defconfig
+	$$(call build_uboot,$(2))
+
+.PHONY: $(1)
+$(1): $(1)_build
+	$$(call install_uboot,$(2))
+
+endef
+
+#
+# Device build targets
+#
+
+$(eval $(call uboot_targets,radxa-rk3576,rk3576,rock-4d-rk3576_defconfig))
+$(eval $(call uboot_targets,radxa-rk3576-spi,rk3576,rock-4d-spi-rk3576_defconfig))
