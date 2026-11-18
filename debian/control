@@ -13,6 +13,7 @@ Build-Depends: debhelper-compat (= 13),
                python3-setuptools,
                swig,
                python3-dev,
+               python-is-python3,
                libgnutls28-dev,
                python3-pyelftools,
                libncurses-dev,
@@ -23,6 +24,7 @@ Build-Depends: debhelper-compat (= 13),
                lib32stdc++6 [!i386],
                lib32z1 [!i386],
                dos2unix,
+               device-tree-compiler,
 
 Package: u-boot-rk2609
 Architecture: all
@@ -49,4 +51,3 @@ Section: admin
 Priority: optional
 Description: Radxa U-Boot meta-package for Radxa RK3576 SPI products
  This package provides the prebuilt U-Boot for Radxa RK3576 products.
-
